@@ -1,0 +1,9 @@
+Sphinx
+python-docs-theme
+pylint
+pyflakes
+pytest
+pytest-cov
+devpi-client
+virtualenv
+flasgger==0.9.4.dev2

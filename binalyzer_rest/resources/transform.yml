@@ -1,0 +1,9 @@
+summary: Transform BLOBs
+tags:
+- "general"
+operationId: "transform"
+produces:
+- "application/json"
+responses:
+  200:
+    description: Transform status

@@ -1,0 +1,9 @@
+summary: Health check
+tags:
+- "general"
+operationId: "health"
+produces:
+- "application/json"
+responses:
+  200:
+    description: Health status
