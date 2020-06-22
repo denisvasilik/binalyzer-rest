@@ -76,6 +76,7 @@ def health():
     """
     return jsonify()
 
+
 @flask_app.route('/transform', methods=['POST'])
 @swag_from('resources/transform.yml')
 def transform():
@@ -101,19 +102,9 @@ def transform():
     binalyzer = Binalyzer(template_provider, data_provider)
     binalyzer.template = template_provider.template
 
-    # Could be n files, should they be downloaded or uploaded to somewhere else?
     return send_file(io.BytesIO(binalyzer.template.value),
                      attachment_filename=binalyzer.template.id,
                      mimetype='application/octet-stream')
-
-
-@flask_app.route('/download/<string:filename>')
-@swag_from('resources/download.yml')
-def download(filename):
-    """Download a file for testing purposes.
-    """
-    filepath = os.path.join(os.getcwd(), 'tests', 'resources', filename)
-    return send_file(filepath, attachment_filename=filename)
 
 
 if __name__ == "__main__":
