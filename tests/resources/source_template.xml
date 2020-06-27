@@ -1,0 +1,6 @@
+<template name="a">
+    <field name="b" size="8"></field>
+    <field name="c" size="8"></field>
+    <field name="d" size="8"></field>
+    <field name="e" size="8"></field>
+</template>
