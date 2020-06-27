@@ -62,6 +62,36 @@ swagger = Swagger(
 )
 
 
+def transform2(source_template, destination_template, additional_data={}):
+    transfer(source_template, destination_template)
+    bind(diff(source_template, destination_template), additional_data)
+
+
+def transfer(source_template, destination_template):
+    existing_leaves = ((source_leave, destination_leave)
+                       for source_leave in source_template.leaves
+                       for destination_leave in destination_template.leaves
+                       if source_leave.name == destination_leave.name)
+
+    for (source_leave, destination_leave) in existing_leaves:
+        destination_leave.value = source_leave.value
+
+
+def diff(source_template, destination_template):
+    return (destination_leave
+            for destination_leave in destination_template.leaves
+            if destination_leave.name not in
+            (source_leave.name for source_leave in source_template.leaves))
+
+
+def bind(templates, data_template_map):
+    for template in templates:
+        if template.name in list(data_template_map.keys()):
+            template.value = data_template_map[template.name]
+        else:
+            template.value = bytes([0] * template.size.value)
+
+
 @flask_app.route('/')
 def index():
     """Redirects base path to API documentation.
@@ -102,18 +132,10 @@ def transform():
     binalyzer = Binalyzer(template_provider, data_provider)
     binalyzer.template = template_provider.template
 
-    _destination_template = XMLTemplateParser(destination_template_response.text).parse()
+    destination_template = XMLTemplateParser(
+        destination_template_response.text).parse()
 
-    # Use flow engine
-    # (1) Create annotated tree
-    #       Compare source and destination template tree
-    # (2)
-    # Traverse through destination tree
-    #   Check each item's existence in source tree
-    #       If it exists
-    #           Use bound data and apply destination template properties
-    #       Else
-    #           Fill template with dummy data
+    transform2(source_template, destination_template)
 
     return send_file(io.BytesIO(binalyzer.template.value),
                      attachment_filename=binalyzer.template.name,
