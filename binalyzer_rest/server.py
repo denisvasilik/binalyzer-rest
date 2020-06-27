@@ -137,7 +137,7 @@ def transform():
 
     transform2(source_template, destination_template)
 
-    return send_file(io.BytesIO(binalyzer.template.value),
+    return send_file(io.BytesIO(destination_template.value),
                      attachment_filename=binalyzer.template.name,
                      mimetype='application/octet-stream')
 
