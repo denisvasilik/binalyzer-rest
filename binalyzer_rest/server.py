@@ -68,13 +68,15 @@ def transform2(source_template, destination_template, additional_data={}):
 
 
 def transfer(source_template, destination_template):
-    existing_leaves = ((source_leave, destination_leave)
+    existing_leaves = [(source_leave, destination_leave)
                        for source_leave in source_template.leaves
                        for destination_leave in destination_template.leaves
-                       if source_leave.name == destination_leave.name)
+                       if source_leave.name == destination_leave.name]
 
     for (source_leave, destination_leave) in existing_leaves:
-        destination_leave.value = source_leave.value
+        extension_size = destination_leave.size.value - source_leave.size.value
+        destination_leave.value = (source_leave.value +
+                                   bytes([0] * extension_size))
 
 
 def diff(source_template, destination_template):
@@ -127,13 +129,10 @@ def transform():
         data_blobs.append(data_blob)
 
     source_template = XMLTemplateParser(source_template_response.text).parse()
-    template_provider = TemplateProvider(source_template)
-    data_provider = DataProvider(io.BytesIO(data_blobs[0]))
-    binalyzer = Binalyzer(template_provider, data_provider)
-    binalyzer.template = template_provider.template
-
     destination_template = XMLTemplateParser(
         destination_template_response.text).parse()
+
+    binalyzer = Binalyzer(source_template, io.BytesIO(data_blobs[0]))
 
     transform2(source_template, destination_template)
 
