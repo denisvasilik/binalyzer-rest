@@ -5,8 +5,8 @@ import unittest
 
 from unittest.mock import MagicMock
 
-from binalyzer_rest import server
-from binalyzer_rest.server import flask_app
+from binalyzer_rest import rest
+from binalyzer_rest.rest import flask_app
 
 
 TESTS_ABS_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -37,6 +37,11 @@ def requests_get_mock(url):
     raise RuntimeError()
 
 
+def requests_put_mock(url, data, headers):
+    global TEST_RESPONSE_DATA
+    TEST_RESPONSE_DATA = data.read()
+
+
 def send_file_mock(filename_or_fp, attachment_filename, mimetype):
     global TEST_RESPONSE_DATA
     filename_or_fp.seek(0)
@@ -51,14 +56,16 @@ def test_client():
 
 @pytest.fixture(scope="module")
 def test_mock(request):
-    requests_get_tmp = server.requests.get
-    send_file_tmp = server.send_file
-    server.requests.get = requests_get_mock
-    server.send_file = send_file_mock
-
+    requests_get_tmp = rest.requests.get
+    requests_put_tmp = rest.requests.put
+    send_file_tmp = rest.send_file
+    rest.requests.get = requests_get_mock
+    rest.send_file = send_file_mock
+    rest.requests.put = requests_put_mock
     def reset_mock():
-        server.requests.get = requests_get_tmp
-        server.send_file = send_file_tmp
+        rest.requests.get = requests_get_tmp
+        rest.send_file = send_file_tmp
+        rest.requests.put = requests_put_tmp
     request.addfinalizer(reset_mock)
 
 
@@ -108,9 +115,13 @@ def test_route_transform(test_client, test_mock):
 
     response = test_client.post('/transform', json={
         'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
         'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
-        'data_urls': ['http://localhost:8000/download/source_data.bin'],
-        'additional_data_urls': ['http://localhost:8000/download/additional_data.bin'],
+        'destination_binding': [],
+        'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
     assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
@@ -147,9 +158,13 @@ def test_transform_identity(test_client, test_mock):
 
     response = test_client.post('/transform', json={
         'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
         'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
-        'data_urls': ['http://localhost:8000/download/source_data.bin'],
-        'additional_data_urls': ['http://localhost:8000/download/additional_data.bin'],
+        'destination_binding': [],
+        'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
     assertStreamEqual(TEST_RESPONSE_DATA, TEST_SOURCE_DATA)
@@ -193,9 +208,13 @@ def test_transform_add_template(test_client, test_mock):
 
     response = test_client.post('/transform', json={
         'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
         'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
-        'data_urls': ['http://localhost:8000/download/source_data.bin'],
-        'additional_data_urls': ['http://localhost:8000/download/additional_data.bin'],
+        'destination_binding': [],
+        'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
     assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
@@ -235,9 +254,13 @@ def test_transform_remove_template(test_client, test_mock):
 
     response = test_client.post('/transform', json={
         'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
         'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
-        'data_urls': ['http://localhost:8000/download/source_data.bin'],
-        'additional_data_urls': ['http://localhost:8000/download/additional_data.bin'],
+        'destination_binding': [],
+        'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
     assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
@@ -279,9 +302,13 @@ def test_transform_shrink_template(test_client, test_mock):
 
     response = test_client.post('/transform', json={
         'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
         'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
-        'data_urls': ['http://localhost:8000/download/source_data.bin'],
-        'additional_data_urls': ['http://localhost:8000/download/additional_data.bin'],
+        'destination_binding': [],
+        'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
     assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
@@ -327,9 +354,13 @@ def test_transform_grow_template(test_client, test_mock):
 
     response = test_client.post('/transform', json={
         'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
         'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
-        'data_urls': ['http://localhost:8000/download/source_data.bin'],
-        'additional_data_urls': ['http://localhost:8000/download/additional_data.bin'],
+        'destination_binding': [],
+        'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
     assert len(TEST_RESPONSE_DATA) == len(expected_bytes)

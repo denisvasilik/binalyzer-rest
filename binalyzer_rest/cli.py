@@ -14,7 +14,7 @@ from werkzeug.serving import run_simple
 from werkzeug.utils import import_string
 from flask._compat import text_type
 
-from .server import flask_app
+from .rest import flask_app
 
 
 class CertParamType(click.ParamType):
