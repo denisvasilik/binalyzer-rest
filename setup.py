@@ -39,6 +39,7 @@ setuptools.setup(
         "flask>=1.0",
         "flasgger>=0.9.3",
         "jsonschema>=2.6.0",
+        "requests",
     ],
     entry_points='''
         [binalyzer.commands]
