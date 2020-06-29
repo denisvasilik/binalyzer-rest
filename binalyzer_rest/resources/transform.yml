@@ -1,9 +1,51 @@
-summary: Transform BLOBs
+summary:
+  Transform data that matches a source template to the description of a
+  destination template.
 tags:
-- "general"
+- "transformation"
 operationId: "transform"
-produces:
-- "application/json"
+consumes:
+  - "application/json"
 responses:
   200:
-    description: Transform status
+    description: OK
+parameters:
+  - name: "body"
+    in: "body"
+    description: "Transformation description"
+    required: true
+    schema:
+      type: "object"
+      required:
+        - "source_template_url"
+        - "destination_template_url"
+      properties:
+        source_template_url:
+          description: "URL to fetch the source template from"
+          type: "string"
+        destination_template_url:
+          description: "URL to fetch the destination from"
+          type: "string"
+        source_binding:
+          description: "Binds nodes of the source template to data"
+          type: "array"
+          items:
+            type: object
+            properties:
+              template_name:
+                type: string
+              data_url:
+                type: string
+        destination_binding:
+          description: "Binds nodes of the destination template to data"
+          type: "array"
+          items:
+            type: object
+            properties:
+              template_name:
+                type: string
+              data_url:
+                type: string
+        deployment_url:
+          description: "URL to deploy the data file created by the transformation"
+          type: "string"

@@ -6,4 +6,4 @@ produces:
 - "application/json"
 responses:
   200:
-    description: Health status
+    description: OK
