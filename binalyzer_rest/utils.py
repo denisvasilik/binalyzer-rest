@@ -15,7 +15,7 @@ def transfer(source_template, destination_template):
                        if source_leave.name == destination_leave.name]
 
     for (source_leave, destination_leave) in existing_leaves:
-        extension_size = destination_leave.size.value - source_leave.size.value
+        extension_size = destination_leave.size - source_leave.size
         destination_leave.value = (source_leave.value +
                                    bytes([0] * extension_size))
 
@@ -32,7 +32,7 @@ def bind(templates, data_template_map):
         if template.name in list(data_template_map.keys()):
             template.value = data_template_map[template.name]
         else:
-            template.value = bytes([0] * template.size.value)
+            template.value = bytes([0] * template.size)
 
 
 def retrieve_data_and_bind_to_template(root_template, bindings):
