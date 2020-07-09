@@ -14,4 +14,4 @@ name = "binalyzer_rest"
 __tag__ = ""
 __build__ = 0
 __version__ = "{}".format(__tag__)
-__commit__ = "00000000"
+__commit__ = "0000000"
