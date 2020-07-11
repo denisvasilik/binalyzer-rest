@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from binalyzer_rest import rest
+from binalyzer_rest import utils
 from binalyzer_rest.rest import flask_app
 
 
@@ -56,14 +57,14 @@ def test_client():
 
 @pytest.fixture(scope="module")
 def test_mock(request):
-    requests_get_tmp = rest.requests.get
+    requests_get_tmp = utils.requests.get
     requests_put_tmp = rest.requests.put
     send_file_tmp = rest.send_file
     rest.requests.get = requests_get_mock
     rest.send_file = send_file_mock
     rest.requests.put = requests_put_mock
     def reset_mock():
-        rest.requests.get = requests_get_tmp
+        utils.requests.get = requests_get_tmp
         rest.send_file = send_file_tmp
         rest.requests.put = requests_put_tmp
     request.addfinalizer(reset_mock)

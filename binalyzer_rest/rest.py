@@ -87,15 +87,30 @@ def transform():
     destination_binding = params['destination_binding']
     deployment_url = params['deployment_url']
 
-    source_template_response = requests.get(source_template_url)
-    source_template = XMLTemplateParser(source_template_response.text).parse()
+    source_template = utils.create_template(
+        source_template_url,
+        source_binding
+    )
 
-    destination_template_response = requests.get(destination_template_url)
-    destination_template = XMLTemplateParser(destination_template_response.text).parse()
+    destination_template = utils.create_template(
+        destination_template_url,
+        destination_binding
+    )
 
-    utils.retrieve_data_and_bind_to_template(source_template, source_binding)
-    utils.transform(source_template, destination_template)
-    utils.retrieve_data_and_bind_to_template(destination_template, destination_binding)
+    utils.bind_data_to_template(
+        source_template,
+        source_binding
+    )
+
+    utils.transform(
+        source_template,
+        destination_template
+    )
+
+    utils.bind_data_to_template(
+        destination_template,
+        destination_binding
+    )
 
     requests.put(deployment_url,
                  data=io.BytesIO(destination_template.value),
