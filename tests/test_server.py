@@ -63,6 +63,7 @@ def test_mock(request):
     rest.requests.get = requests_get_mock
     rest.send_file = send_file_mock
     rest.requests.put = requests_put_mock
+
     def reset_mock():
         utils.requests.get = requests_get_tmp
         rest.send_file = send_file_tmp
@@ -366,6 +367,54 @@ def test_transform_grow_template(test_client, test_mock):
 
     assert len(TEST_RESPONSE_DATA) == len(expected_bytes)
     assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
+    assert response.status_code == 200
+
+
+def test_transform_return_file_content(test_client, test_mock):
+    global TEST_SOURCE_TEMPLATE
+    global TEST_DESTINATION_TEMPLATE
+    global TEST_SOURCE_DATA
+
+    TEST_SOURCE_DATA = (bytes([0x11] * 8) +
+                        bytes([0x22] * 8) +
+                        bytes([0x33] * 8) +
+                        bytes([0x44] * 8))
+
+    TEST_SOURCE_TEMPLATE = """
+        <template name="a">
+            <field name="b" size="8"></field>
+            <field name="c" size="8"></field>
+            <field name="d" size="8"></field>
+            <field name="e" size="8"></field>
+        </template>
+    """
+
+    TEST_DESTINATION_TEMPLATE = """
+        <template name="a">
+            <field name="c" size="8"></field>
+            <field name="e" size="8"></field>
+            <field name="i" size="8"></field>
+            <field name="j" size="8"></field>
+        </template>
+    """
+
+    expected_bytes = (bytes([0x22] * 8) +
+                      bytes([0x44] * 8) +
+                      bytes([0x00] * 8) +
+                      bytes([0x00] * 8))
+
+    response = test_client.post('/transform', json={
+        'source_template_url': 'http://localhost:8000/download/source_template.xml',
+        'source_binding': [{
+            'template_name': 'a',
+            'data_url': 'http://localhost:8000/download/source_data.bin',
+        }],
+        'destination_template_url': 'http://localhost:8000/download/destination_template.xml',
+        'destination_binding': [],
+        'deployment_url': None,
+    })
+
+    assertStreamEqual(response.data, expected_bytes)
     assert response.status_code == 200
 
 

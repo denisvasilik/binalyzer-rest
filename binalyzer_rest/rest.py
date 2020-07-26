@@ -23,7 +23,9 @@ from flask import (
     redirect,
     url_for,
     send_file,
+    Response
 )
+from werkzeug.wsgi import FileWrapper
 
 from binalyzer import (
     XMLTemplateParser,
@@ -112,8 +114,12 @@ def transform():
         destination_binding
     )
 
-    requests.put(deployment_url,
-                 data=io.BytesIO(destination_template.value),
-                 headers={'Content-type': 'application/octet-stream'})
-
-    return jsonify(), 200
+    if deployment_url:
+        requests.put(deployment_url,
+                    data=io.BytesIO(destination_template.value),
+                    headers={'Content-type': 'application/octet-stream'})
+        return jsonify(), 200
+    else:
+        destination_data = io.BytesIO(destination_template.value)
+        destination_file = FileWrapper(destination_data)
+        return Response(destination_file, direct_passthrough=True)
