@@ -54,7 +54,8 @@ def create_template(template_url, bindings):
 
 def bind_data_to_template(root_template, bindings):
     for binding in bindings:
-        (data_url, template_name) = binding.values()
+        data_url = binding.get('data_url')
+        template_name = binding.get('template_name')
         template = find_by_attr(root_template, template_name)
         if template:
             data = requests.get(data_url).content
