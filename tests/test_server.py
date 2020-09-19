@@ -76,12 +76,6 @@ def test_route_health(test_client):
     assert response.status_code == 200
 
 
-def assertStreamEqual(first, second):
-    zipped_data = zip(first, second)
-    for (first_byte, second_byte) in zipped_data:
-        assert first_byte == second_byte
-
-
 def test_route_transform(test_client, test_mock):
     global TEST_SOURCE_TEMPLATE
     global TEST_DESTINATION_TEMPLATE
@@ -126,7 +120,7 @@ def test_route_transform(test_client, test_mock):
         'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
-    assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
+    assert TEST_RESPONSE_DATA == expected_bytes
     assert response.status_code == 200
 
 
@@ -169,7 +163,7 @@ def test_transform_identity(test_client, test_mock):
         'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
-    assertStreamEqual(TEST_RESPONSE_DATA, TEST_SOURCE_DATA)
+    assert TEST_RESPONSE_DATA == TEST_SOURCE_DATA
     assert response.status_code == 200
 
 
@@ -219,7 +213,7 @@ def test_transform_add_template(test_client, test_mock):
         'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
-    assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
+    assert TEST_RESPONSE_DATA == expected_bytes
     assert response.status_code == 200
 
 
@@ -265,7 +259,7 @@ def test_transform_remove_template(test_client, test_mock):
         'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
-    assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
+    assert TEST_RESPONSE_DATA == expected_bytes
     assert response.status_code == 200
 
 
@@ -313,7 +307,7 @@ def test_transform_shrink_template(test_client, test_mock):
         'deployment_url': 'http://localhost:8000/upload/destination_data.bin',
     })
 
-    assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
+    assert TEST_RESPONSE_DATA == expected_bytes
     assert response.status_code == 200
 
 
@@ -366,7 +360,7 @@ def test_transform_grow_template(test_client, test_mock):
     })
 
     assert len(TEST_RESPONSE_DATA) == len(expected_bytes)
-    assertStreamEqual(TEST_RESPONSE_DATA, expected_bytes)
+    assert TEST_RESPONSE_DATA == expected_bytes
     assert response.status_code == 200
 
 
@@ -414,7 +408,7 @@ def test_transform_return_file_content(test_client, test_mock):
         'deployment_url': None,
     })
 
-    assertStreamEqual(response.data, expected_bytes)
+    assert response.data == expected_bytes
     assert response.status_code == 200
 
 
