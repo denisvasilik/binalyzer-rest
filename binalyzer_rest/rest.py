@@ -28,6 +28,7 @@ from flask import (
 from werkzeug.wsgi import FileWrapper
 
 from binalyzer import (
+    Binalyzer,
     XMLTemplateParser,
     TemplateProvider,
     DataProvider,
@@ -104,9 +105,9 @@ def transform():
         source_binding
     )
 
-    utils.transform(
+    Binalyzer().transform(
         source_template,
-        destination_template
+        destination_template,
     )
 
     utils.bind_data_to_template(
